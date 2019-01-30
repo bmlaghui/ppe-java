@@ -1,5 +1,8 @@
 package inscriptions;
-
+import commandLineMenus.List;
+import commandLineMenus.Menu;
+import commandLineMenus.Option;
+import commandLineMenus.rendering.examples.util.InOut;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,6 +32,11 @@ public class Inscriptions implements Serializable
 	private Inscriptions()
 	{
 	}
+	public Inscriptions(Inscriptions inscriptions)
+	 {
+	  this.inscriptions = inscriptions;
+	  menuPrincipal().start();
+	 }
 	
 	/**
 	 * Retourne les compÃ©titions.
@@ -238,10 +246,17 @@ public class Inscriptions implements Serializable
 		return "Candidats : " + getCandidats().toString()
 			+ "\nCompetitions  " + getCompetitions().toString();
 	}
+	private Menu menuPrincipal()
+	 {
+	  Menu menu = new Menu("Gestionnaire de contacts");
+	 
+	  return menu;
+	 }
 	
 	public static void main(String[] args)
 	{
-		Inscriptions inscriptions = Inscriptions.getInscriptions();
+		
+		/*Inscriptions inscriptions = Inscriptions.getInscriptions();
 		Competition flechettes = inscriptions.createCompetition("Mondial de flÃ©chettes", LocalDate.of(2019, 12, 12), false);
 		Personne tony = inscriptions.createPersonne("Tony", "Dent de plomb", "azerty"), 
 				 boris = inscriptions.createPersonne("Boris", "le Hachoir", "ytreza"),
@@ -253,17 +268,17 @@ public class Inscriptions implements Serializable
 		Equipe lesManouches = inscriptions.createEquipe("Les Manouches");
 		lesManouches.add(boris);
 		lesManouches.add(tony);
-		//System.out.println("Inscription ouverte ? "+ flechettes.inscriptionsOuvertes());
-		//System.out.println("Date cloture: "+flechettes.getDateCloture());
-		//System.out.println("Date Systeme: "+LocalDate.now());
-		//System.out.println(inscriptions);
-		//flechettes.setDateCloture(LocalDate.of(2020,12, 12));
-		//System.out.println("Candidat déjà inscris:"+flechettes.getCandidats());
-		//System.out.println("Candidat à inscrire:"+flechettes.getCandidatsAInscrire());
-		
-	//	System.out.println(flechettes.getDateCloture());
+		System.out.println("Inscription ouverte ? "+ flechettes.inscriptionsOuvertes());
+		System.out.println("Date cloture: "+flechettes.getDateCloture());
+		System.out.println("Date Systeme: "+LocalDate.now());
+		System.out.println(inscriptions);
+		flechettes.setDateCloture(LocalDate.of(2020,12, 12));
+		System.out.println("Candidat déjà inscris:"+flechettes.getCandidats());
+		System.out.println("Candidat à inscrire:"+flechettes.getCandidatsAInscrire());
+	
+		System.out.println(flechettes.getDateCloture());
 			lesManouches.delete();
-		//	System.out.println(inscriptions);
+			System.out.println(inscriptions);
 			try
 			{
 				inscriptions.sauvegarder();
@@ -271,7 +286,7 @@ public class Inscriptions implements Serializable
 			catch (IOException e)
 			{
 				System.out.println("Sauvegarde impossible." + e);
-			}
-			
+			}*/
+		new Inscriptions(inscriptions inscription);
 		}
 }
