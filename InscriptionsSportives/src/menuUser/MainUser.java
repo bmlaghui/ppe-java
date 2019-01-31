@@ -26,14 +26,14 @@ public class MainUser {
 	}
 	
 	private Menu menuInscriptions() {
-		Menu menu = new Menu("Inscriptions", "i");
+		Menu menu = new Menu(".:: Menu Inscriptions .::", "i");
 		menu.add(creerEquipe());
-		menu.add(creerPersonne());
+		menu.add(addPersonne());
 		menu.addBack("r");
 		return menu; 		}
 	
 	private Menu menuCandidats() {
-		Menu menu = new Menu("Candidat", "c");
+		Menu menu = new Menu(".:: Menu Candidats ::.", "c");
 		menu.add(menuEquipe());
 		menu.add(menuPersonne());
 		menu.addBack("r");
@@ -41,7 +41,7 @@ public class MainUser {
 	}
 	
 	private Menu menuCompetitions() {
-		Menu menu = new Menu("Competitions", "n");
+		Menu menu = new Menu(".:: Menu Competitions ::.", "cm");
 		menu.add(listCompetitions());
 		menu.addBack("r");
 		return menu;
@@ -51,15 +51,12 @@ public class MainUser {
 	{
 		return new List<Competition>("Selectionner une competitions", "s",
 				() -> new ArrayList<>(Inscriptions.getInscriptions().getCompetitions()),
-				(element) -> menuSelectCompetition(element)
-				);
+				(element) -> menuSelectCompetition(element));
 	}
 	
 	private Menu menuSelectCompetition(Competition c) {
 		Menu menu = new Menu ("Competition: ", c.getNom());
-		//menu.add(inscriptionEquipe(c));
-	//	menu.add(inscriptionPersonne(c));
-//		menu.add(supprimerCompetition());
+		//TODO
 		menu.addBack("r");
 		return menu;
 	}
@@ -84,7 +81,7 @@ public class MainUser {
 
 	
 	private Option creerEquipe() { 
-		return new Option("Creer un candidat equipe", "e", () ->  { 
+		return new Option("Creer un candidat [equipe]", "e", () ->  { 
 			Scanner sc = new Scanner(System.in);
 			String nom = sc.next();
 			Inscriptions.getInscriptions().createEquipe(nom);
@@ -92,9 +89,9 @@ public class MainUser {
 		);
 	}
 
-	private Option creerPersonne() {
+	private Option addPersonne() {
 		
-		return new Option("Creer un candidat personne", "p", () -> {
+		return new Option("Creer un candidat [personne]", "p", () -> {
 			Scanner sc = new Scanner(System.in);
 			String nom = sc.next();
 			String prenom = sc.next();
@@ -119,7 +116,7 @@ public class MainUser {
 		return new Option("Liste des equipes", "l", () -> { System.out.println(Inscriptions.getInscriptions().getEquipes());});
 	}
 	
-	private Option ListPersonne() {
+	private Option listPersonnes() {
 		return new Option("Liste des personnes", "l", () -> { System.out.println(Inscriptions.getInscriptions().getPersonnes());});
 	}
 	
@@ -140,7 +137,7 @@ public class MainUser {
 	}
 	
 	private Option supprimerEquipe(Equipe e) {
-		return new Option ("Supprimer cette equipe", "s", () -> { e.delete();}); 
+		return new Option ("Supprimer cette équipe", "s", () -> { e.delete();}); 
 	}
 	
 	private Option listMembres(Equipe e) {
@@ -149,8 +146,8 @@ public class MainUser {
 	
 	private Menu menuPersonne() {
 		Menu menu = new Menu ("Personne", "p");
-		menu.add(creerPersonne());
-		menu.add(ListPersonne());
+		menu.add(addPersonne());
+		menu.add(listPersonnes());
 		menu.add(selectionPersonne());
 		menu.addBack("r");
 		return menu;
@@ -158,61 +155,49 @@ public class MainUser {
 	
 	private List<Personne> selectionPersonne()
 	{
-		return new List<Personne>("Selectionner une personne", "s",
+		return new List<Personne>("Veuillez Selectionner une personne !", "s",
 				() -> new ArrayList<>(Inscriptions.getInscriptions().getPersonnes()),
 				(element) -> menuSelectPersonne(element)
 				);
 	}
 	
 	private Menu menuSelectPersonne(Personne p) {
-		Menu menu = new Menu (p.getPrenom() + " " + p.getNom());
-		menu.add(modifNom(p));
-		menu.add(modifPrenom(p));
-		menu.add(modifMail(p));
-		menu.add(supprimer(p));
+		Menu menu = new Menu (".:: "+p.getPrenom() + " " + p.getNom()+" ::.");
+		menu.add(updateNom(p));
+		menu.add(updatePrenom(p));
+		menu.add(updateMail(p));
+		menu.add(delete(p));
 		menu.addBack("r");
 		return menu;
 	}
 	
-	private Option modifNom(Personne p) {
-		return new Option ("Modifier le nom", "n", () -> { String nvxNom = InOut.getString("Entrer le nouveau nom "); 
-		p.setNom(nvxNom);
+	private Option updateNom(Personne p) {
+		return new Option ("Modifier le nom", "n", () -> { String nouveauNom = InOut.getString("Veuillez saisir un nouveau nom ! "); 
+		p.setNom(nouveauNom);
 		}
 		);
 	}
 
-	private Option modifPrenom(Personne p) {
-		return new Option ("Modifier le prenom", "p", () -> { String nvxPrenom = InOut.getString("Entrer le nouveau prenom"); 
-		p.setPrenom(nvxPrenom);
+	private Option updatePrenom(Personne p) {
+		return new Option ("Modifier le prenom", "p", () -> { String nouveauPrenom = InOut.getString("Veuillez saisir un nouveau prénom !"); 
+		p.setPrenom(nouveauPrenom);
 		}
 		);
 	}
 	
-	private Option modifMail(Personne p) {
-		return new Option ("Modifier l'adresse mail", "m", () -> { String nvxMail = InOut.getString("Entrer le nouveau mail");
-		p.setMail(nvxMail);
+	private Option updateMail(Personne p) {
+		return new Option ("Modifier l'adresse mail", "m", () -> { String nouveauMail = InOut.getString("Veuillez saisir une nouvelle adresse e-mail !");
+		p.setMail(nouveauMail);
 		}
 		);
 	} 
 	
-	private Option supprimer(Personne p) {
+	private Option delete(Personne p) {
 		return new Option ("Supprimer cette personne", "s", () -> { p.delete();});
 	}
 	
 	
 	
-//	private Option selectPersonne() {
-//		
-//	}
-//	
-//	private Option selectEquipe() {
-//		
-//	}
-//	
-//	private Option selectCompetition() {
-//		
-//	}
-//	
 
 	public static void main(String[] args)
 	{
