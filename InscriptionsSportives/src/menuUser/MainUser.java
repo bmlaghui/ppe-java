@@ -1,5 +1,6 @@
 package menuUser;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -42,7 +43,9 @@ public class MainUser {
 	
 	private Menu menuCompetitions() {
 		Menu menu = new Menu(".:: Menu Competitions ::.", "cm");
+		menu.add(creerCompetition());
 		menu.add(listCompetitions());
+		menu.add(selectionCompetitions());
 		menu.addBack("r");
 		return menu;
 	}
@@ -56,10 +59,54 @@ public class MainUser {
 	
 	private Menu menuSelectCompetition(Competition c) {
 		Menu menu = new Menu ("Competition: ", c.getNom());
-		//TODO
+		menu.add(modifierNomCompetition(c));
+		menu.add(modifierDateCompetition(c));
+		menu.add(listCandidatCompetition(c));
+		menu.add(supprimerCompetition(c));
 		menu.addBack("r");
 		return menu;
 	}
+	
+	private Option modifierNomCompetition(Competition c) {
+		return new Option ("Modifier le nom", "n", () -> { 
+			String nouveauNom = InOut.getString("Veuillez saisir un nouveau nom ! "); 
+			c.setNom(nouveauNom);
+		}
+		);
+	}
+	
+
+	
+	private Option modifierDateCompetition(Competition c) {
+		return new Option ("Modifier la date de cloture", "d", () -> { 
+			Scanner sc = new Scanner(System.in);
+			System.out.println("Insérer l'année de la date de cloture :");
+			int anneeCloture = Integer.parseInt(sc.next());
+			System.out.println("Insérer le mois de la date de cloture :");
+			int moisCloture = Integer.parseInt(sc.next());
+			System.out.println("Insérer le jour de la date de cloture :");
+			int jourCloture = Integer.parseInt(sc.next());
+			LocalDate dateCloture = LocalDate.of(anneeCloture, moisCloture, jourCloture);
+			c.setDateCloture(dateCloture);
+		}
+		);
+	}
+	
+	private Option listCandidatCompetition(Competition c) {
+		return new Option("Liste des candidats", "l", () -> { 
+			System.out.println(c.getCandidats());
+		});
+	}
+	
+
+	
+	private Option supprimerCompetition(Competition c) {
+		return new Option ("Supprimer cette competition", "s", () -> { 
+			c.delete();
+			Menu.goBack();
+		}); 
+	}
+	
 	
 	private Option inscriptionEquipe(Equipe e) {
 		return new Option("Inscription Equipe", "e", () -> {
@@ -83,8 +130,28 @@ public class MainUser {
 	private Option creerEquipe() { 
 		return new Option("Creer un candidat [equipe]", "e", () ->  { 
 			Scanner sc = new Scanner(System.in);
+			System.out.println("Insérez le nom de l'équipe :");
 			String nom = sc.next();
 			Inscriptions.getInscriptions().createEquipe(nom);
+			}
+		);
+	}
+	
+	private Option creerCompetition() { 
+		return new Option("Creer une competition", "c", () ->  { 
+			Scanner sc = new Scanner(System.in);
+			System.out.println("Insérez le nom de la compétition :");
+			String nom = sc.next();
+			System.out.println("Insérer l'année de la date de cloture :");
+			int anneeCloture = Integer.parseInt(sc.next());
+			System.out.println("Insérer le mois de la date de cloture :");
+			int moisCloture = Integer.parseInt(sc.next());
+			System.out.println("Insérer le jour de la date de cloture :");
+			int jourCloture = Integer.parseInt(sc.next());
+			LocalDate dateCloture = LocalDate.of(anneeCloture, moisCloture, jourCloture);
+			System.out.println("Compétition en équipe (Y/N) :");
+			Boolean enEquipe = sc.next().equals("Y");
+			Inscriptions.getInscriptions().createCompetition(nom, dateCloture, enEquipe);
 			}
 		);
 	}
@@ -93,8 +160,11 @@ public class MainUser {
 		
 		return new Option("Creer un candidat [personne]", "p", () -> {
 			Scanner sc = new Scanner(System.in);
+			System.out.println("Insérez le nom du candidat :");
 			String nom = sc.next();
+			System.out.println("Insérez le prénom du candidat :");
 			String prenom = sc.next();
+			System.out.println("Insérez le mail du candidat :");
 			String mail = sc.next();
 			Inscriptions.getInscriptions().createPersonne(nom, prenom, mail);
 			}
@@ -137,7 +207,10 @@ public class MainUser {
 	}
 	
 	private Option supprimerEquipe(Equipe e) {
-		return new Option ("Supprimer cette équipe", "s", () -> { e.delete();}); 
+		return new Option ("Supprimer cette équipe", "s", () -> { 
+			e.delete();
+			Menu.goBack();
+		}); 
 	}
 	
 	private Option listMembres(Equipe e) {
@@ -193,7 +266,10 @@ public class MainUser {
 	} 
 	
 	private Option delete(Personne p) {
-		return new Option ("Supprimer cette personne", "s", () -> { p.delete();});
+		return new Option ("Supprimer cette personne", "s", () -> { 
+			p.delete(); 
+			Menu.goBack();
+		});
 	}
 	
 	
