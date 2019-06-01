@@ -4,10 +4,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import com.hibernate.entity.Competition;
+import com.hibernate.entity.Equipe;
+import com.hibernate.entity.Inscriptions;
+import com.hibernate.entity.Personne;
+
 import commandLineMenus.*;
 import commandLineMenus.rendering.examples.util.InOut;
-import inscriptions.Inscriptions;
-import inscriptions.*;
 
 
 public class MainUser {
@@ -80,11 +83,11 @@ public class MainUser {
 	private Option modifierDateCompetition(Competition c) {
 		return new Option ("Modifier la date de cloture", "d", () -> { 
 			Scanner sc = new Scanner(System.in);
-			System.out.println("Insérer l'année de la date de cloture :");
+			System.out.println("Insï¿½rer l'annï¿½e de la date de cloture :");
 			int anneeCloture = Integer.parseInt(sc.next());
-			System.out.println("Insérer le mois de la date de cloture :");
+			System.out.println("Insï¿½rer le mois de la date de cloture :");
 			int moisCloture = Integer.parseInt(sc.next());
-			System.out.println("Insérer le jour de la date de cloture :");
+			System.out.println("Insï¿½rer le jour de la date de cloture :");
 			int jourCloture = Integer.parseInt(sc.next());
 			LocalDate dateCloture = LocalDate.of(anneeCloture, moisCloture, jourCloture);
 			c.setDateCloture(dateCloture);
@@ -130,7 +133,7 @@ public class MainUser {
 	private Option creerEquipe() { 
 		return new Option("Creer un candidat [equipe]", "e", () ->  { 
 			Scanner sc = new Scanner(System.in);
-			System.out.println("Insérez le nom de l'équipe :");
+			System.out.println("Insï¿½rez le nom de l'ï¿½quipe :");
 			String nom = sc.next();
 			Inscriptions.getInscriptions().createEquipe(nom);
 			}
@@ -140,16 +143,16 @@ public class MainUser {
 	private Option creerCompetition() { 
 		return new Option("Creer une competition", "c", () ->  { 
 			Scanner sc = new Scanner(System.in);
-			System.out.println("Insérez le nom de la compétition :");
+			System.out.println("Insï¿½rez le nom de la compï¿½tition :");
 			String nom = sc.next();
-			System.out.println("Insérer l'année de la date de cloture :");
+			System.out.println("Insï¿½rer l'annï¿½e de la date de cloture :");
 			int anneeCloture = Integer.parseInt(sc.next());
-			System.out.println("Insérer le mois de la date de cloture :");
+			System.out.println("Insï¿½rer le mois de la date de cloture :");
 			int moisCloture = Integer.parseInt(sc.next());
-			System.out.println("Insérer le jour de la date de cloture :");
+			System.out.println("Insï¿½rer le jour de la date de cloture :");
 			int jourCloture = Integer.parseInt(sc.next());
 			LocalDate dateCloture = LocalDate.of(anneeCloture, moisCloture, jourCloture);
-			System.out.println("Compétition en équipe (Y/N) :");
+			System.out.println("Compï¿½tition en ï¿½quipe (Y/N) :");
 			Boolean enEquipe = sc.next().equals("Y");
 			Inscriptions.getInscriptions().createCompetition(nom, dateCloture, enEquipe);
 			}
@@ -160,11 +163,11 @@ public class MainUser {
 		
 		return new Option("Creer un candidat [personne]", "p", () -> {
 			Scanner sc = new Scanner(System.in);
-			System.out.println("Insérez le nom du candidat :");
+			System.out.println("Insï¿½rez le nom du candidat :");
 			String nom = sc.next();
-			System.out.println("Insérez le prénom du candidat :");
+			System.out.println("Insï¿½rez le prï¿½nom du candidat :");
 			String prenom = sc.next();
-			System.out.println("Insérez le mail du candidat :");
+			System.out.println("Insï¿½rez le mail du candidat :");
 			String mail = sc.next();
 			Inscriptions.getInscriptions().createPersonne(nom, prenom, mail);
 			}
@@ -207,7 +210,7 @@ public class MainUser {
 	}
 	
 	private Option supprimerEquipe(Equipe e) {
-		return new Option ("Supprimer cette équipe", "s", () -> { 
+		return new Option ("Supprimer cette ï¿½quipe", "s", () -> { 
 			e.delete();
 			Menu.goBack();
 		}); 
@@ -252,7 +255,7 @@ public class MainUser {
 	}
 
 	private Option updatePrenom(Personne p) {
-		return new Option ("Modifier le prenom", "p", () -> { String nouveauPrenom = InOut.getString("Veuillez saisir un nouveau prénom !"); 
+		return new Option ("Modifier le prenom", "p", () -> { String nouveauPrenom = InOut.getString("Veuillez saisir un nouveau prï¿½nom !"); 
 		p.setPrenom(nouveauPrenom);
 		}
 		);

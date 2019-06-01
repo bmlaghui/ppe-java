@@ -1,5 +1,4 @@
 /bin
 Inscriptions.srz
 **~
-/.metadata/
-/.recommenders/
+/target/

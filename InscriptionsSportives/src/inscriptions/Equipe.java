@@ -6,8 +6,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * ReprÃ©sente une Equipe. C'est-Ã -dire un ensemble de personnes pouvant 
- * s'inscrire Ã  une compÃ©tition.
+ * Représente une Equipe. C'est-à-dire un ensemble de personnes pouvant 
+ * s'inscrire à une compétition.
  * 
  */
 
@@ -22,7 +22,7 @@ public class Equipe extends Candidat
 	}
 
 	/**
-	 * Retourne l'ensemble des personnes formant l'Ã©quipe.
+	 * Retourne l'ensemble des personnes formant l'équipe.
 	 */
 	
 	public SortedSet<Personne> getMembres()
@@ -31,7 +31,7 @@ public class Equipe extends Candidat
 	}
 	
 	/**
-	 * Ajoute une personne dans l'Ã©quipe.
+	 * Ajoute une personne dans l'équipe.
 	 * @param membre
 	 * @return
 	 */
@@ -43,7 +43,7 @@ public class Equipe extends Candidat
 	}
 
 	/**
-	 * Supprime une personne de l'Ã©quipe. 
+	 * Supprime une personne de l'équipe. 
 	 * @param membre
 	 * @return
 	 */
@@ -55,13 +55,13 @@ public class Equipe extends Candidat
 	}
 
 	/**
-	 * Retourne les personnes que l'on peut ajouter dans cette Ã©quipe.
-	 * @return les personnes que l'on peut ajouter dans cette Ã©quipe.
+	 * Retourne les personnes que l'on peut ajouter dans cette équipe.
+	 * @return les personnes que l'on peut ajouter dans cette équipe.
 	 */
 	
 	public Set<Personne> getPersonnesAAjouter()
 	{
-		// TODO retourner les personnes que l'on peut ajouter dans cette Ã©quipe.
+		// TODO retourner les personnes que l'on peut ajouter dans cette équipe.
 		Set<Personne> PersonneAAjouter = new TreeSet<>();
 		for (Personne personnes : Inscriptions.getInscriptions().getPersonnes())
 			if (!getMembres().contains(personnes))

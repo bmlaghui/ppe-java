@@ -1,25 +1,45 @@
-package inscriptions;
+package com.hibernate.entity;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
+
+import com.hibernate.connect.Passerelle;
+
 /**
- * Représente une compétition, c'est-à-dire un ensemble de candidats 
- * inscrits à un événement, les inscriptions sont closes à la date dateCloture.
+ * Reprï¿½sente une compï¿½tition, c'est-ï¿½-dire un ensemble de candidats 
+ * inscrits ï¿½ un ï¿½vï¿½nement, les inscriptions sont closes ï¿½ la date dateCloture.
  *
  */
-
+@Entity(name = "competition")
 public class Competition implements Comparable<Competition>, Serializable
 {
 	private static final long serialVersionUID = -2882150118573759729L;
-	private Inscriptions inscriptions;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int id;
+	
 	private String nom;
-	private Set<Candidat> candidats;
 	private LocalDate dateCloture;
 	private boolean enEquipe = false;
+	
+	@Transient
+	private Inscriptions inscriptions;
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "competitions")
+	private Set<Candidat> candidats;
+	
+	protected Competition() {}
 
 	Competition(Inscriptions inscriptions, String nom, LocalDate dateCloture, boolean enEquipe)
 	{
@@ -28,10 +48,11 @@ public class Competition implements Comparable<Competition>, Serializable
 		this.nom = nom;
 		this.dateCloture = dateCloture;
 		candidats = new TreeSet<>();
+		Passerelle.save(this);
 	}
 	
 	/**
-	 * Retourne le nom de la compétition.
+	 * Retourne le nom de la compï¿½tition.
 	 * @return
 	 */
 	
@@ -41,12 +62,13 @@ public class Competition implements Comparable<Competition>, Serializable
 	}
 	
 	/**
-	 * Modifie le nom de la compétition.
+	 * Modifie le nom de la compï¿½tition.
 	 */
 	
 	public void setNom(String nom)
 	{
 		this.nom = nom ;
+		Passerelle.save(this);
 	}
 	
 	/**
@@ -57,7 +79,7 @@ public class Competition implements Comparable<Competition>, Serializable
 	
 	public boolean inscriptionsOuvertes()
 	{
-		// TODO retourner vrai si et seulement si la date système est antérieure à la date de clôture.
+		// TODO retourner vrai si et seulement si la date systï¿½me est antï¿½rieure ï¿½ la date de clï¿½ture.
 		
 		return getDateCloture().isAfter(LocalDate.now());
 		
@@ -74,7 +96,7 @@ public class Competition implements Comparable<Competition>, Serializable
 	}
 	
 	/**
-	 * Est vrai si et seulement si les inscriptions sont réservées aux équipes.
+	 * Est vrai si et seulement si les inscriptions sont rï¿½servï¿½es aux ï¿½quipes.
 	 * @return
 	 */
 	
@@ -91,11 +113,12 @@ public class Competition implements Comparable<Competition>, Serializable
 	
 	public void setDateCloture(LocalDate dateCloture)
 	{
-		// TODO vérifier que l'on avance pas la date.
+		// TODO vï¿½rifier que l'on avance pas la date.
 		if (getDateCloture().isBefore(dateCloture))
 			this.dateCloture = dateCloture;
 		else
 			throw new RuntimeException("Impossible de modifier la date.");
+		Passerelle.save(this);
 	}
 	
 	/**
@@ -109,8 +132,8 @@ public class Competition implements Comparable<Competition>, Serializable
 	}
 	
 	/**
-	 * Inscrit un candidat de type Personne à la compétition. Provoque une
-	 * exception si la compétition est réservée aux équipes ou que les 
+	 * Inscrit un candidat de type Personne ï¿½ la compï¿½tition. Provoque une
+	 * exception si la compï¿½tition est rï¿½servï¿½e aux ï¿½quipes ou que les 
 	 * inscriptions sont closes.
 	 * @param personne
 	 * @return
@@ -118,16 +141,19 @@ public class Competition implements Comparable<Competition>, Serializable
 	
 	public boolean add(Personne personne)
 	{
-		// TODO vérifier que la date de clôture n'est pas passée
+		// TODO vï¿½rifier que la date de clï¿½ture n'est pas passï¿½e
 		if (enEquipe || ! inscriptionsOuvertes())
 			throw new RuntimeException("Impossbile d'ajouter une personne.");
 		personne.add(this);
-		return candidats.add(personne);
+		boolean toReturn = candidats.add(personne);
+		Passerelle.save(this);
+		
+		return toReturn;
 	}
 
 	/**
-	 * Inscrit un candidat de type Equipe à la compétition. Provoque une
-	 * exception si la compétition est réservée aux personnes ou que 
+	 * Inscrit un candidat de type Equipe ï¿½ la compï¿½tition. Provoque une
+	 * exception si la compï¿½tition est rï¿½servï¿½e aux personnes ou que 
 	 * les inscriptions sont closes.
 	 * @param personne
 	 * @return
@@ -135,21 +161,24 @@ public class Competition implements Comparable<Competition>, Serializable
 
 	public boolean add(Equipe equipe)
 	{
-		// TODO vérifier que la date de clôture n'est pas passée
+		// TODO vï¿½rifier que la date de clï¿½ture n'est pas passï¿½e
 		if (!enEquipe || !inscriptionsOuvertes())
 			throw new RuntimeException("Impossible d'ajouter une equipe.");
 		equipe.add(this);
-		return candidats.add(equipe);
+		boolean toReturn = candidats.add(equipe);
+		Passerelle.save(this);
+		
+		return toReturn;
 	}
 	
 	/**
-	 * Retourne les Candidats que l'on peut inscrire à cette competition.
-	 * @return les candidats que l'on peut inscrire à cette compétition.
+	 * Retourne les Candidats que l'on peut inscrire ï¿½ cette competition.
+	 * @return les candidats que l'on peut inscrire ï¿½ cette compï¿½tition.
 	 */
 	
 	public Set<Candidat> getCandidatsAInscrire()
 	{
-		// TODO les candidats que l'on peut inscrire à cette compétition.
+		// TODO les candidats que l'on peut inscrire ï¿½ cette compï¿½tition.
 		Set<Candidat> CandidatsAInscrire = new TreeSet<>();
 		for (Candidat candidats : inscriptions.getCandidats())
 			if (!(getCandidats()).contains(candidats))
@@ -158,7 +187,7 @@ public class Competition implements Comparable<Competition>, Serializable
 	}
 	
 	/**
-	 * Désinscrit un candidat.
+	 * Dï¿½sinscrit un candidat.
 	 * @param candidat
 	 * @return
 	 */
@@ -166,11 +195,14 @@ public class Competition implements Comparable<Competition>, Serializable
 	public boolean remove(Candidat candidat)
 	{
 		candidat.remove(this);
-		return candidats.remove(candidat);
+		boolean toReturn = candidats.remove(candidat);
+		Passerelle.save(this);
+		
+		return toReturn;
 	}
 	
 	/**
-	 * Supprime la compétition de l'application.
+	 * Supprime la compï¿½tition de l'application.
 	 */
 	
 	public void delete()
@@ -178,6 +210,7 @@ public class Competition implements Comparable<Competition>, Serializable
 		for (Candidat candidat : candidats)
 			remove(candidat);
 		inscriptions.delete(this);
+		Passerelle.delete(this);
 	}
 	
 	@Override
