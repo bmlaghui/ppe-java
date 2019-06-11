@@ -72,6 +72,8 @@ public class TestCompetition {
 	@Test
 	public void TestAddEquipe() {
 		assertFalse(c1.getCandidats().contains(e2));
+		assertFalse(c1.getCandidats().contains(e1));
+		
 	}
 	
 	@Test
@@ -79,6 +81,10 @@ public class TestCompetition {
 		assertTrue(c1.add(p1));
 		assertTrue(c1.remove(p1));
 		assertFalse(c1.getCandidats().contains(p1));
+		assertTrue(c1.add(p2));
+		assertTrue(c1.remove(p2));
+		assertFalse(c1.getCandidats().contains(p2));
+		
 	}
 	
 }

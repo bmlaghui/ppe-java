@@ -5,17 +5,49 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.persistence.*;
+
 /**
- * Candidat ‡ un ÈvÈnement sportif, soit une personne physique, soit une Èquipe.
+ * Candidat √† un √©v√©nement sportif, soit une personne physique, soit une √©quipe.
  *
  */
 
+@Entity
+@Table(name = "candidat")
+@Inheritance(strategy=InheritanceType.JOINED) //gere l'heritage
 public abstract class Candidat implements Comparable<Candidat>, Serializable
 {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id_ca", nullable = false)
+    private int id_ca;
+
+	@Transient
 	private static final long serialVersionUID = -6035399822298694746L;
+	
+	@Transient
 	private Inscriptions inscriptions;
+	
+	@Column (name = "nom")
 	private String nom;
-	private Set<Competition> competitions;
+	
+	
+    /**
+     * Cl√©s plusieurs √† plusieurs sur la table inscrire
+     **/
+	@ManyToMany(fetch = FetchType.LAZY,
+	            cascade
+	            = {
+	                CascadeType.DETACH
+	            })
+	    @JoinTable(name = "inscrire", joinColumns = {
+	        @JoinColumn(name = "id_ca")}, inverseJoinColumns = {
+	        @JoinColumn(name = "id_co")})
+	/**
+     * Cr√©e une liste de toutes les comp√©titions auxquelles le candidat est inscrit
+     **/
+	 private Set<Competition> competitions;
+	
 	
 	Candidat(Inscriptions inscriptions, String nom)
 	{
@@ -23,6 +55,8 @@ public abstract class Candidat implements Comparable<Candidat>, Serializable
 		this.nom = nom;
 		competitions = new TreeSet<>();
 	}
+	
+    Candidat(){}
 
 	/**
 	 * Retourne le nom du candidat.
@@ -45,7 +79,7 @@ public abstract class Candidat implements Comparable<Candidat>, Serializable
 	}
 
 	/**
-	 * Retourne toutes les compÈtitions auxquelles ce candidat est inscrit.s
+	 * Retourne toutes les comp√©titions auxquelles ce candidat est inscrit.s
 	 * @return
 	 */
 
@@ -72,7 +106,7 @@ public abstract class Candidat implements Comparable<Candidat>, Serializable
 	{
 		for (Competition c : competitions)
 			c.remove(this);
-		inscriptions.delete(this);
+		//inscriptions.delete(this);
 	}
 	
 	@Override
@@ -84,6 +118,11 @@ public abstract class Candidat implements Comparable<Candidat>, Serializable
 	@Override
 	public String toString()
 	{
-		return "\n" + getNom() + " -> inscrit ‡ " + getCompetitions();
+		return getNom() + " -> inscrit √† " + getCompetitions();
 	}
+	
+	public int getId() {
+		return id_ca;
+	}
+	
 }

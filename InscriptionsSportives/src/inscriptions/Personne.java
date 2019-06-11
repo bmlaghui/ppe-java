@@ -1,19 +1,52 @@
 package inscriptions;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
+
+import javax.persistence.*;
 
 /**
- * ReprÈsente une personne physique pouvant s'inscrire ‡ une compÈtition.
+ * Repr√©sente une personne physique pouvant s'inscrire √† une comp√©tition.
  */
 
+@Entity
+@Table(name="personne")
 public class Personne extends Candidat
 {
+
+	@Transient
 	private static final long serialVersionUID = 4434646724271327254L;
-	private String prenom, mail;
+	
+	@Column(name = "prenom")
+	private String prenom;
+
+	@Column(name = "mail")
+	private String mail;
+	
+    /*
+     * Cl√©s plusieurs √† plusieurs sur la table participer
+     */
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade =
+            {
+            		CascadeType.DETACH
+            })
+    @JoinTable(name = "appartenir", joinColumns = {
+        @JoinColumn(name = "id_ca")}, inverseJoinColumns = {
+        @JoinColumn(name = "id_eq")})
 	private Set<Equipe> equipes;
 	
+     
+	Personne(){}
+	
+	
+    /**
+     * Constructeur
+     * 
+     * @param inscriptions
+     * @param nom
+     * @param prenom
+     * @param mail
+     */
 	Personne(Inscriptions inscriptions, String nom, String prenom, String mail)
 	{
 		super(inscriptions, nom);
@@ -23,7 +56,7 @@ public class Personne extends Candidat
 	}
 
 	/**
-	 * Retourne le prÈnom de la personne.
+	 * Retourne le pr√©nom de la personne.
 	 * @return
 	 */
 	
@@ -33,7 +66,7 @@ public class Personne extends Candidat
 	}
 
 	/**
-	 * Modifie le prÈnom de la personne.
+	 * Modifie le pr√©nom de la personne.
 	 * @param prenom
 	 */
 	
@@ -43,7 +76,7 @@ public class Personne extends Candidat
 	}
 
 	/**
-	 * Retourne l'adresse Èlectronique de la personne.
+	 * Retourne l'adresse √©lectronique de la personne.
 	 * @return
 	 */
 	
@@ -53,7 +86,7 @@ public class Personne extends Candidat
 	}
 
 	/**
-	 * Modifie l'adresse Èlectronique de la personne.
+	 * Modifie l'adresse √©lectronique de la personne.
 	 * @param mail
 	 */
 	
@@ -63,7 +96,7 @@ public class Personne extends Candidat
 	}
 
 	/**
-	 * Retoure les Èquipes dont cette personne fait partie.
+	 * Retoure les √©quipes dont cette personne fait partie.
 	 * @return
 	 */
 	
@@ -74,11 +107,15 @@ public class Personne extends Candidat
 	
 	boolean add(Equipe equipe)
 	{
+		equipes.add(equipe);
+		//Passerelle.save(equipe);
 		return equipes.add(equipe);
 	}
 
 	boolean remove(Equipe equipe)
 	{
+		equipes.remove(equipe);
+		//Passerelle.save(equipe);
 		return equipes.remove(equipe);
 	}
 	

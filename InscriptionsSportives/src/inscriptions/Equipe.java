@@ -1,37 +1,57 @@
 package inscriptions;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
+
+import javax.persistence.*;
 
 /**
- * ReprÈsente une Equipe. C'est-‡-dire un ensemble de personnes pouvant 
- * s'inscrire ‡ une compÈtition.
+ * Repr√©sente une Equipe. C'est-√†-dire un ensemble de personnes pouvant 
+ * s'inscrire √† une comp√©tition.
  * 
  */
 
+@Entity
+@Table(name="equipe")
 public class Equipe extends Candidat
 {
+	@Transient
 	private static final long serialVersionUID = 4147819927233466035L;
+	
+    /*
+     * Cl√©s plusieurs √† plusieurs sur la table participer
+     */
+	@ManyToMany(fetch = FetchType.LAZY,
+            cascade =
+            {
+            		CascadeType.DETACH
+            })
+    @JoinTable(name = "appartenir", joinColumns = {
+        @JoinColumn(name = "id_eq")}, inverseJoinColumns = {
+        @JoinColumn(name = "id_ca")})
+    @OrderBy("id_ca ASC")
 	private SortedSet<Personne> membres = new TreeSet<>();
 	
-	Equipe(Inscriptions inscriptions, String nom)
+	public Equipe(Inscriptions inscriptions, String nom)
 	{
 		super(inscriptions, nom);
 	}
+	
+    public Equipe() {}
 
 	/**
-	 * Retourne l'ensemble des personnes formant l'Èquipe.
+	 * Retourne l'ensemble des personnes formant l'√©quipe.
 	 */
-	
 	public SortedSet<Personne> getMembres()
 	{
 		return Collections.unmodifiableSortedSet(membres);
 	}
+	public SortedSet<Personne> getMembres(Equipe equipe)
+	{
+		return Collections.unmodifiableSortedSet(equipe.getMembres());
+	}
 	
 	/**
-	 * Ajoute une personne dans l'Èquipe.
+	 * Ajoute une personne dans l'√©quipe.
 	 * @param membre
 	 * @return
 	 */
@@ -43,7 +63,7 @@ public class Equipe extends Candidat
 	}
 
 	/**
-	 * Supprime une personne de l'Èquipe. 
+	 * Supprime une personne de l'√©quipe. 
 	 * @param membre
 	 * @return
 	 */
@@ -55,13 +75,13 @@ public class Equipe extends Candidat
 	}
 
 	/**
-	 * Retourne les personnes que l'on peut ajouter dans cette Èquipe.
-	 * @return les personnes que l'on peut ajouter dans cette Èquipe.
+	 * Retourne les personnes que l'on peut ajouter dans cette √©quipe.
+	 * @return les personnes que l'on peut ajouter dans cette √©quipe.
 	 */
 	
 	public Set<Personne> getPersonnesAAjouter()
 	{
-		// TODO retourner les personnes que l'on peut ajouter dans cette Èquipe.
+		// retourner les personnes que l'on peut ajouter dans cette √©quipe.
 		Set<Personne> PersonneAAjouter = new TreeSet<>();
 		for (Personne personnes : Inscriptions.getInscriptions().getPersonnes())
 			if (!getMembres().contains(personnes))
@@ -74,7 +94,7 @@ public class Equipe extends Candidat
 	{
 		super.delete();
 	}
-	
+		
 	@Override
 	public String toString()
 	{

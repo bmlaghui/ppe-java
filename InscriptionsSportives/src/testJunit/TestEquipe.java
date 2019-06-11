@@ -19,7 +19,7 @@ public class TestEquipe {
 	private Equipe equipe1;
 
 	
-	@Before // avec cette annotation, cette méthode sera appelée avant chaque test
+	@Before // avec cette annotation, cette methode sera appelee avant chaque test
 	public void setUp() throws Exception {
 		 p1 = inscr.createPersonne("Mlaghui", "Brahim", "bra@gmail.com");
 		 p2 = inscr.createPersonne("Borgi", "Ihcen", "ihcen@gmail.com");

@@ -1,31 +1,27 @@
 package inscriptions;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.Collections;
+import java.io.*;
+import java.util.*;
+
 import java.time.LocalDate;
-import java.util.SortedSet;
-import java.util.TreeSet;
+
+import hibernate.Passerelle;
 
 /**
  * Point d'entrée dans l'application, un seul objet de type Inscription
  * permet de gérer les compétitions, candidats (de type equipe ou personne)
  * ainsi que d'inscrire des candidats à des compétition.
  */
-
 public class Inscriptions implements Serializable
 {
 	private static final long serialVersionUID = -3095339436048473524L;
 	private static final String FILE_NAME = "Inscriptions.srz";
 	private static Inscriptions inscriptions;
-	
+		
 	private SortedSet<Competition> competitions = new TreeSet<>();
 	private SortedSet<Candidat> candidats = new TreeSet<>();
 
+	
 	private Inscriptions()
 	{
 	}
@@ -37,6 +33,7 @@ public class Inscriptions implements Serializable
 	
 	public SortedSet<Competition> getCompetitions()
 	{
+		//Passerelle.getData("competition");
 		return Collections.unmodifiableSortedSet(competitions);
 	}
 	
@@ -47,6 +44,7 @@ public class Inscriptions implements Serializable
 	
 	public SortedSet<Candidat> getCandidats()
 	{
+		//Passerelle.getData("candidat");
 		return Collections.unmodifiableSortedSet(candidats);
 	}
 
@@ -61,6 +59,7 @@ public class Inscriptions implements Serializable
 		for (Candidat c : getCandidats())
 			if (c instanceof Personne)
 				personnes.add((Personne)c);
+		//Passerelle.getData("personne");
 		return Collections.unmodifiableSortedSet(personnes);
 	}
 
@@ -75,6 +74,7 @@ public class Inscriptions implements Serializable
 		for (Candidat c : getCandidats())
 			if (c instanceof Equipe)
 				equipes.add((Equipe)c);
+		//Passerelle.getData("equipe");
 		return Collections.unmodifiableSortedSet(equipes);
 	}
 
@@ -82,23 +82,23 @@ public class Inscriptions implements Serializable
 	 * Créée une compétition. Ceci est le seul moyen, il n'y a pas
 	 * de constructeur public dans {@link Competition}.
 	 * @param nom
-	 * @param dateCloture
+	 * @param date
 	 * @param enEquipe
 	 * @return
 	 */
 	
 	public Competition createCompetition(String nom, 
-			LocalDate dateCloture, boolean enEquipe)
+			LocalDate date, boolean enEquipe)
 	{
-		Competition competition = new Competition(this, nom, dateCloture, enEquipe);
+		Competition competition = new Competition(this, nom, date, enEquipe);
 		competitions.add(competition);
+		//sauvegarder(competition);
 		return competition;
 	}
 
 	/**
 	 * Créée un Candidat de type Personne. Ceci est le seul moyen, il n'y a pas
 	 * de constructeur public dans {@link Personne}.
-
 	 * @param nom
 	 * @param prenom
 	 * @param mail
@@ -109,6 +109,7 @@ public class Inscriptions implements Serializable
 	{
 		Personne personne = new Personne(this, nom, prenom, mail);
 		candidats.add(personne);
+		//sauvegarder(personne);
 		return personne;
 	}
 	
@@ -125,13 +126,23 @@ public class Inscriptions implements Serializable
 	{
 		Equipe equipe = new Equipe(this, nom);
 		candidats.add(equipe);
+		//sauvegarder(equipe);
 		return equipe;
 	}
+	
+	/**
+	 * 
+	 * @param competition
+	 */
 	
 	void delete(Competition competition)
 	{
 		competitions.remove(competition);
 	}
+	/**
+	 * 
+	 * @param candidat
+	 */
 	
 	void delete(Candidat candidat)
 	{
@@ -155,13 +166,14 @@ public class Inscriptions implements Serializable
 		}
 		return inscriptions;
 	}
+	
 
 	/**
 	 * Retourne un object inscriptions vide. Ne modifie pas les compétitions
 	 * et candidats déjà existants.
 	 */
 	
-	public Inscriptions reinitialiser()
+	public static Inscriptions reinitialiser()
 	{
 		inscriptions = new Inscriptions();
 		return getInscriptions();
@@ -232,6 +244,14 @@ public class Inscriptions implements Serializable
 		}
 	}
 	
+	/**
+	 * Sauvegarde l'objet via la passerelle
+	 * @param o
+	 */
+	public void sauvegarder(Object o) {
+		Passerelle.save(o);
+	}
+	
 	@Override
 	public String toString()
 	{
@@ -241,37 +261,6 @@ public class Inscriptions implements Serializable
 	
 	public static void main(String[] args)
 	{
-		Inscriptions inscriptions = Inscriptions.getInscriptions();
-		Competition flechettes = inscriptions.createCompetition("Mondial de fléchettes", LocalDate.of(2019, 12, 12), false);
-		Personne tony = inscriptions.createPersonne("Tony", "Dent de plomb", "azerty"), 
-				 boris = inscriptions.createPersonne("Boris", "le Hachoir", "ytreza"),
-				 brahim = inscriptions.createPersonne("Brahim", "Mlaghui", "brah"),
-				 benoit = inscriptions.createPersonne("Benoit", "Valle", "ben");
-		flechettes.add(benoit);
-		flechettes.add(tony);
-		flechettes.add(brahim);
-		Equipe lesManouches = inscriptions.createEquipe("Les Manouches");
-		lesManouches.add(boris);
-		lesManouches.add(tony);
-		//System.out.println("Inscription ouverte ? "+ flechettes.inscriptionsOuvertes());
-		//System.out.println("Date cloture: "+flechettes.getDateCloture());
-		//System.out.println("Date Systeme: "+LocalDate.now());
-		//System.out.println(inscriptions);
-		//flechettes.setDateCloture(LocalDate.of(2020,12, 12));
-		//System.out.println("Candidat d�j� inscris:"+flechettes.getCandidats());
-		//System.out.println("Candidat � inscrire:"+flechettes.getCandidatsAInscrire());
 		
-	//	System.out.println(flechettes.getDateCloture());
-			lesManouches.delete();
-		//	System.out.println(inscriptions);
-			try
-			{
-				inscriptions.sauvegarder();
-			} 
-			catch (IOException e)
-			{
-				System.out.println("Sauvegarde impossible." + e);
-			}
-			
-		}
+	}
 }
